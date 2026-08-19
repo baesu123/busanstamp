@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,40 +33,60 @@ public class SecurityConfig {
                 new JwtAuthenticationFilter(jwtProvider);
 
         http
-                // JWT를 Authorization 헤더로 보내는 REST API
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 서버 세션을 만들지 않음
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
 
-                // 기본 로그인 화면과 Basic 인증 사용 안 함
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // 회원가입, 로그인
                         .requestMatchers(
                                 "/api/auth/signup",
-                                "/api/auth/login",
+                                "/api/auth/login"
+                        ).permitAll()
+
+                        // 장소 조회는 공개
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/places",
+                                "/api/places/**"
+                        ).permitAll()
+
+                        // Swagger
+                        .requestMatchers(
                                 "/swagger-ui/**",
+                                "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        // 관리자 API
+                        .requestMatchers(
+                                "/api/admin/**"
+                        ).hasRole("ADMIN")
+
+                        // 나머지는 로그인 필요
                         .anyRequest().authenticated()
                 )
 
                 .exceptionHandling(exception -> exception
+
                         .authenticationEntryPoint(
                                 (request, response, authException) -> {
                                     response.setStatus(
                                             HttpServletResponse.SC_UNAUTHORIZED
                                     );
+
                                     response.setContentType(
                                             "application/json;charset=UTF-8"
                                     );
+
                                     response.getWriter().write("""
                                             {
                                               "status": 401,
@@ -74,18 +95,21 @@ public class SecurityConfig {
                                             """);
                                 }
                         )
+
                         .accessDeniedHandler(
                                 (request, response, accessDeniedException) -> {
                                     response.setStatus(
                                             HttpServletResponse.SC_FORBIDDEN
                                     );
+
                                     response.setContentType(
                                             "application/json;charset=UTF-8"
                                     );
+
                                     response.getWriter().write("""
                                             {
                                               "status": 403,
-                                              "message": "접근 권한이 없습니다."
+                                              "message": "관리자 권한이 필요합니다."
                                             }
                                             """);
                                 }
