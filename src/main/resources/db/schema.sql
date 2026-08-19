@@ -38,3 +38,4 @@ CREATE TABLE places (
         FOREIGN KEY (created_by)
             REFERENCES users(user_id)
 );
+
