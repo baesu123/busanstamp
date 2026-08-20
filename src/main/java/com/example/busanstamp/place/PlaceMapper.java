@@ -18,6 +18,7 @@ public interface PlaceMapper {
             @Param("placeId") Long placeId
     );
 
+    //저장되어 있는 카카오장소가 있는지 확인
     int existsByKakaoPlaceId(
             @Param("kakaoPlaceId") String kakaoPlaceId
     );
