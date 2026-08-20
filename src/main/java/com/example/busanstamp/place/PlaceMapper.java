@@ -12,14 +12,22 @@ public interface PlaceMapper {
             @Param("keyword") String keyword,
             @Param("category") String category
     );
+
     //placeId로 장소를 상세조회
     Place findById(
             @Param("placeId") Long placeId
     );
+
+    int existsByKakaoPlaceId(
+            @Param("kakaoPlaceId") String kakaoPlaceId
+    );
+
     //신규 장소 저장
     int save(Place place);
+
     //기존 장소 업데이트
     int update(Place place);
+
     //placeId로 장소 삭제
     int deleteById(
             @Param("placeId") Long placeId
