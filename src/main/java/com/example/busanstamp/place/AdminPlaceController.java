@@ -1,5 +1,6 @@
 package com.example.busanstamp.place;
 
+import com.example.busanstamp.place.dto.KakaoPlaceImportRequest;
 import com.example.busanstamp.place.dto.PlaceCreateRequest;
 import com.example.busanstamp.place.dto.PlaceResponse;
 import com.example.busanstamp.place.dto.PlaceUpdateRequest;
@@ -52,5 +53,25 @@ public class AdminPlaceController {
         placeService.delete(placeId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/from-kakao")
+    public ResponseEntity<PlaceResponse> createFromKakao(
+            @AuthenticationPrincipal
+            AuthenticatedUser authenticatedUser,
+
+            @Valid
+            @RequestBody
+            KakaoPlaceImportRequest request
+    ) {
+        PlaceResponse response =
+                placeService.createFromKakao(
+                        request,
+                        authenticatedUser.userId()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }
