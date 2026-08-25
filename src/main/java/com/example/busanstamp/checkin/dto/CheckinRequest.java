@@ -1,4 +1,11 @@
 package com.example.busanstamp.checkin.dto;
 
-public class CheckinRequest {
+import jakarta.validation.constraints.NotBlank;
+
+public record CheckinRequest(
+
+        @NotBlank
+        String token
+
+) {
 }
