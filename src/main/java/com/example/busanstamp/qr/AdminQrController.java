@@ -15,53 +15,28 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminQrController {
 
-    private final QrCodeService
-            qrCodeService;
+    private final QrCodeService qrCodeService;
 
 
-    @GetMapping(
-            "/api/admin/places/{placeId}/qr"
-    )
-    public ResponseEntity<byte[]> getPlaceQr(
-            @PathVariable Long placeId,
+    @GetMapping("/api/admin/places/{placeId}/qr")
+    public ResponseEntity<byte[]> getPlaceQr(@PathVariable Long placeId,
 
-            @RequestParam(
-                    defaultValue = "320"
-            )
-            int size
-    ) {
+                                             @RequestParam(defaultValue = "320") int size) {
 
-        if (
-                size < 160 ||
-                        size > 1000
-        ) {
+        if (size < 160 || size > 1000) {
 
-            throw new ApiException(
-                    HttpStatus.BAD_REQUEST,
-                    "QR 크기는 160부터 1000까지 가능합니다."
-            );
+            throw new ApiException(HttpStatus.BAD_REQUEST, "QR 크기는 160부터 1000까지 가능합니다.");
         }
 
 
-        byte[] image =
-                qrCodeService.createPlaceQr(
-                        placeId,
-                        size
-                );
+        byte[] image = qrCodeService.createPlaceQr(placeId, size);
 
 
         return ResponseEntity.ok()
 
-                .contentType(
-                        MediaType.IMAGE_PNG
-                )
+                .contentType(MediaType.IMAGE_PNG)
 
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "inline; filename=\"place-"
-                                + placeId
-                                + "-qr.png\""
-                )
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"place-" + placeId + "-qr.png\"")
 
                 .body(image);
     }
