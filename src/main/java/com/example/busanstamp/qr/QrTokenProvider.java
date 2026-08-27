@@ -37,17 +37,11 @@ public class QrTokenProvider {
     public String createToken(Long placeId) {
 
         return Jwts.builder()
-
                 .issuer(ISSUER)
-
                 .subject(String.valueOf(placeId))
-
                 .claim("purpose", PURPOSE)
-
                 .issuedAt(new Date())
-
                 .signWith(secretKey)
-
                 .compact();
     }
 
@@ -61,13 +55,9 @@ public class QrTokenProvider {
         try {
 
             Claims claims = Jwts.parser()
-
                     .verifyWith(secretKey)
-
                     .build()
-
                     .parseSignedClaims(token)
-
                     .getPayload();
 
 
